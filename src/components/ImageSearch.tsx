@@ -1,11 +1,10 @@
 import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
+import { useDropzone } from "react-dropzone";
+import Cropper from "react-easy-crop";
 import { X } from "lucide-react";
+import { DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
-import ImageUploader from "./ImageUploader";
-import ImageCropper from "./ImageCropper";
 
 const ImageSearch = ({ onClose }: { onClose: () => void }) => {
   const [image, setImage] = useState<string | null>(null);
@@ -13,7 +12,25 @@ const ImageSearch = ({ onClose }: { onClose: () => void }) => {
   const [zoom, setZoom] = useState(1);
   const [croppedArea, setCroppedArea] = useState(null);
   const { toast } = useToast();
-  const navigate = useNavigate();
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [".png", ".jpg", ".jpeg", ".gif"],
+    },
+    multiple: false,
+  });
 
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
     setCroppedArea(croppedAreaPixels);
@@ -27,20 +44,16 @@ const ImageSearch = ({ onClose }: { onClose: () => void }) => {
       });
       return;
     }
-
-    onClose();
-    navigate("/image-search", { state: { image } });
+    // For demo purposes, redirect to Google Images
+    window.location.href = "https://images.google.com";
   };
 
   return (
-    <DialogContent className="sm:max-w-[600px] max-h-[80vh] bg-[#202124] text-white">
+    <DialogContent className="sm:max-w-[600px] bg-[#202124] text-white">
       <DialogHeader>
         <DialogTitle className="text-xl font-semibold">
           Search by image
         </DialogTitle>
-        <DialogDescription className="text-[#9aa0a6]">
-          Search Google for related images
-        </DialogDescription>
         <button
           onClick={onClose}
           className="absolute right-4 top-4 text-gray-400 hover:text-white"
@@ -49,24 +62,48 @@ const ImageSearch = ({ onClose }: { onClose: () => void }) => {
         </button>
       </DialogHeader>
 
-      <div className="mt-4 flex h-[400px]">
-        <div className="w-full flex flex-col">
-          {!image ? (
-            <ImageUploader onImageSelect={setImage} image={image} />
-          ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <ImageCropper
-                image={image}
-                crop={crop}
-                zoom={zoom}
-                setCrop={setCrop}
-                setZoom={setZoom}
-                onCropComplete={onCropComplete}
-                onClear={() => setImage(null)}
-                onSearch={handleSearch}
-              />
-            </div>
-          )}
+      <div className="mt-4">
+        {!image ? (
+          <div
+            {...getRootProps()}
+            className={`border-2 border-dashed border-[#5f6368] rounded-lg p-8 text-center cursor-pointer
+              ${isDragActive ? "border-[#8ab4f8] bg-[#303134]" : ""}`}
+          >
+            <input {...getInputProps()} />
+            <p className="text-[#9aa0a6]">
+              {isDragActive
+                ? "Drop the image here"
+                : "Drag and drop an image here, or click to select"}
+            </p>
+          </div>
+        ) : (
+          <div className="relative h-[400px]">
+            <Cropper
+              image={image}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={onCropComplete}
+            />
+          </div>
+        )}
+
+        <div className="mt-4 flex justify-end space-x-2">
+          <Button
+            variant="outline"
+            onClick={() => setImage(null)}
+            className="bg-transparent text-white hover:bg-[#303134]"
+          >
+            Clear
+          </Button>
+          <Button
+            onClick={handleSearch}
+            className="bg-[#8ab4f8] text-black hover:bg-[#aecbfa]"
+          >
+            Search
+          </Button>
         </div>
       </div>
     </DialogContent>
