@@ -1,27 +1,25 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
-import { X, ArrowLeft } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 import ImageUploader from "./ImageUploader";
 import ImageCropper from "./ImageCropper";
-import SearchResults from "./SearchResults";
-import { searchImage } from "@/services/imageSearch";
 
 const ImageSearch = ({ onClose }: { onClose: () => void }) => {
   const [image, setImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedArea, setCroppedArea] = useState(null);
-  const [showResults, setShowResults] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
     setCroppedArea(croppedAreaPixels);
   }, []);
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     if (!image) {
       toast({
         title: "Please upload an image first",
@@ -30,36 +28,16 @@ const ImageSearch = ({ onClose }: { onClose: () => void }) => {
       return;
     }
 
-    try {
-      const results = await searchImage(image);
-      setSearchResults(results.results);
-      setShowResults(true);
-    } catch (error) {
-      toast({
-        title: "Error searching image",
-        description: "Please try again later",
-        variant: "destructive",
-      });
-    }
+    onClose();
+    navigate("/image-search", { state: { image } });
   };
 
   return (
     <DialogContent className="sm:max-w-[90vw] h-[90vh] bg-[#202124] text-white">
       <DialogHeader>
-        <div className="flex items-center">
-          {showResults && (
-            <Button
-              variant="ghost"
-              className="mr-2"
-              onClick={() => setShowResults(false)}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          )}
-          <DialogTitle className="text-xl font-semibold">
-            Search by image
-          </DialogTitle>
-        </div>
+        <DialogTitle className="text-xl font-semibold">
+          Search by image
+        </DialogTitle>
         <DialogDescription className="text-[#9aa0a6]">
           Search Google for related images
         </DialogDescription>
@@ -71,8 +49,8 @@ const ImageSearch = ({ onClose }: { onClose: () => void }) => {
         </button>
       </DialogHeader>
 
-      <div className="mt-4 flex h-full gap-4">
-        <div className="w-1/2 flex flex-col">
+      <div className="mt-4 flex h-full">
+        <div className="w-full flex flex-col">
           {!image ? (
             <ImageUploader onImageSelect={setImage} image={image} />
           ) : (
@@ -88,12 +66,6 @@ const ImageSearch = ({ onClose }: { onClose: () => void }) => {
             />
           )}
         </div>
-
-        {showResults && (
-          <div className="w-1/2 overflow-y-auto">
-            <SearchResults results={searchResults} />
-          </div>
-        )}
       </div>
     </DialogContent>
   );
