@@ -33,7 +33,7 @@ const ImageSearch = ({ onClose }: { onClose: () => void }) => {
   };
 
   return (
-    <DialogContent className="sm:max-w-[90vw] h-[90vh] bg-[#202124] text-white">
+    <DialogContent className="sm:max-w-[600px] max-h-[80vh] bg-[#202124] text-white">
       <DialogHeader>
         <DialogTitle className="text-xl font-semibold">
           Search by image
@@ -49,21 +49,23 @@ const ImageSearch = ({ onClose }: { onClose: () => void }) => {
         </button>
       </DialogHeader>
 
-      <div className="mt-4 flex h-full">
+      <div className="mt-4 flex h-[400px]">
         <div className="w-full flex flex-col">
           {!image ? (
             <ImageUploader onImageSelect={setImage} image={image} />
           ) : (
-            <ImageCropper
-              image={image}
-              crop={crop}
-              zoom={zoom}
-              setCrop={setCrop}
-              setZoom={setZoom}
-              onCropComplete={onCropComplete}
-              onClear={() => setImage(null)}
-              onSearch={handleSearch}
-            />
+            <div className="flex-1 flex items-center justify-center">
+              <ImageCropper
+                image={image}
+                crop={crop}
+                zoom={zoom}
+                setCrop={setCrop}
+                setZoom={setZoom}
+                onCropComplete={onCropComplete}
+                onClear={() => setImage(null)}
+                onSearch={handleSearch}
+              />
+            </div>
           )}
         </div>
       </div>
