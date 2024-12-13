@@ -7,6 +7,7 @@ import { Search, Camera } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import ImageSearch from "@/components/ImageSearch";
 import ImageBrowser from "@/components/ImageBrowser";
+import { useToast } from "@/hooks/use-toast";
 
 const Images = () => {
   const location = useLocation();
@@ -14,6 +15,8 @@ const Images = () => {
   const [showImageSearch, setShowImageSearch] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [isSearching, setIsSearching] = useState(false);
+  const { toast } = useToast();
 
   // Get the image from location state or redirect if none exists
   const uploadedImage = location.state?.image;
@@ -21,6 +24,23 @@ const Images = () => {
     navigate("/");
     return null;
   }
+
+  const handleImageSearch = async () => {
+    setIsSearching(true);
+    // In a real implementation, you would:
+    // 1. Convert the cropped image to a buffer
+    // 2. Send it to TinEye API
+    // 3. Process and display results
+    toast({
+      title: "Starting image search",
+      description: "Please wait while we search for similar images...",
+    });
+    
+    // Simulate API delay
+    setTimeout(() => {
+      setIsSearching(false);
+    }, 3000);
+  };
 
   return (
     <div className="min-h-screen bg-[#202124]">
@@ -52,6 +72,13 @@ const Images = () => {
         {/* Left panel with image and cropping */}
         <ResizablePanel defaultSize={40} minSize={30}>
           <div className="h-[calc(100vh-56px)] bg-[#202124] p-6">
+            <Button
+              variant="outline"
+              className="w-full mb-4 rounded-full bg-[#303134] text-[#e8eaed] border-none hover:bg-[#3c4043]"
+              onClick={handleImageSearch}
+            >
+              Find image source
+            </Button>
             <div className="relative h-[70vh] bg-[#303134] rounded-lg overflow-hidden">
               <Cropper
                 image={uploadedImage}
@@ -62,33 +89,26 @@ const Images = () => {
                 onZoomChange={setZoom}
               />
             </div>
-            <div className="mt-4 flex justify-between items-center">
+            <div className="mt-4 flex justify-end items-center gap-2">
               <Button
                 variant="outline"
                 className="rounded-full bg-[#303134] text-[#e8eaed] border-none hover:bg-[#3c4043]"
               >
-                Find image source
+                Text
               </Button>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="rounded-full bg-[#303134] text-[#e8eaed] border-none hover:bg-[#3c4043]"
-                >
-                  Text
-                </Button>
-                <Button
-                  variant="outline"
-                  className="rounded-full bg-[#303134] text-[#e8eaed] border-none hover:bg-[#3c4043]"
-                >
-                  Translate
-                </Button>
-                <Button 
-                  className="rounded-full bg-[#8ab4f8] text-black hover:bg-[#aecbfa]"
-                >
-                  <Search className="w-4 h-4 mr-2" />
-                  Search
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                className="rounded-full bg-[#303134] text-[#e8eaed] border-none hover:bg-[#3c4043]"
+              >
+                Translate
+              </Button>
+              <Button 
+                className="rounded-full bg-[#8ab4f8] text-black hover:bg-[#aecbfa]"
+                onClick={handleImageSearch}
+              >
+                <Search className="w-4 h-4 mr-2" />
+                Search
+              </Button>
             </div>
           </div>
         </ResizablePanel>
@@ -96,7 +116,7 @@ const Images = () => {
         {/* Right panel with browser */}
         <ResizablePanel defaultSize={60} minSize={30}>
           <div className="h-[calc(100vh-56px)] bg-[#202124] p-6">
-            <ImageBrowser isLoading={true} />
+            <ImageBrowser isLoading={isSearching} />
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
