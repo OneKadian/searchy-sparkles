@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Cropper from "react-easy-crop";
 import { ResizablePanelGroup, ResizablePanel } from "@/components/ui/resizable";
@@ -20,10 +20,24 @@ const Images = () => {
 
   // Get the image from location state or redirect if none exists
   const uploadedImage = location.state?.image;
+  const shouldStartSearch = location.state?.startSearch;
+  
   if (!uploadedImage && !showImageSearch) {
     navigate("/");
     return null;
   }
+
+  // Start search automatically if flag is present
+  useEffect(() => {
+    if (shouldStartSearch) {
+      handleImageSearch();
+      // Clear the flag from location state to prevent repeated searches
+      navigate(location.pathname, { 
+        state: { image: uploadedImage },
+        replace: true 
+      });
+    }
+  }, []);
 
   const handleImageSearch = async () => {
     setIsSearching(true);

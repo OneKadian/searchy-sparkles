@@ -46,7 +46,13 @@ const ImageSearch = ({ onClose }: { onClose: () => void }) => {
       });
       return;
     }
-    navigate("/images", { state: { image } });
+    // Navigate to images page with both the image and a flag to start searching
+    navigate("/images", { 
+      state: { 
+        image,
+        startSearch: true // Add this flag to trigger immediate search
+      } 
+    });
     onClose();
   };
 
