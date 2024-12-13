@@ -26,12 +26,12 @@ const Images = () => {
       {/* Navbar */}
       <nav className="flex items-center justify-between px-6 py-2 border-b border-[#3c4043]">
         <div className="flex items-center gap-6">
-          <img
-            src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_92x30dp.png"
-            alt="Google"
-            className="h-[30px] cursor-pointer"
+          <span 
+            className="text-white text-2xl font-semibold cursor-pointer"
             onClick={() => navigate("/")}
-          />
+          >
+            Google
+          </span>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"

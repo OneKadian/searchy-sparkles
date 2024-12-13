@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { useNavigate } from "react-router-dom";
 import Cropper from "react-easy-crop";
 import { X } from "lucide-react";
 import { DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -7,6 +8,7 @@ import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 const ImageSearch = ({ onClose }: { onClose: () => void }) => {
+  const navigate = useNavigate();
   const [image, setImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -44,8 +46,8 @@ const ImageSearch = ({ onClose }: { onClose: () => void }) => {
       });
       return;
     }
-    // For demo purposes, redirect to Google Images
-    window.location.href = "https://images.google.com";
+    navigate("/images", { state: { image } });
+    onClose();
   };
 
   return (
