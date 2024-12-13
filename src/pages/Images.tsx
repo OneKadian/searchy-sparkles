@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Search, Camera } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import ImageSearch from "@/components/ImageSearch";
+import ImageBrowser from "@/components/ImageBrowser";
 
 const Images = () => {
   const location = useLocation();
@@ -64,24 +65,26 @@ const Images = () => {
             <div className="mt-4 flex justify-between items-center">
               <Button
                 variant="outline"
-                className="bg-transparent text-white hover:bg-[#303134]"
+                className="rounded-full bg-[#303134] text-[#e8eaed] border-none hover:bg-[#3c4043]"
               >
                 Find image source
               </Button>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="bg-transparent text-white hover:bg-[#303134]"
+                  className="rounded-full bg-[#303134] text-[#e8eaed] border-none hover:bg-[#3c4043]"
                 >
                   Text
                 </Button>
                 <Button
                   variant="outline"
-                  className="bg-transparent text-white hover:bg-[#303134]"
+                  className="rounded-full bg-[#303134] text-[#e8eaed] border-none hover:bg-[#3c4043]"
                 >
                   Translate
                 </Button>
-                <Button className="bg-[#8ab4f8] text-black hover:bg-[#aecbfa]">
+                <Button 
+                  className="rounded-full bg-[#8ab4f8] text-black hover:bg-[#aecbfa]"
+                >
                   <Search className="w-4 h-4 mr-2" />
                   Search
                 </Button>
@@ -90,9 +93,11 @@ const Images = () => {
           </div>
         </ResizablePanel>
 
-        {/* Right panel - empty for now */}
+        {/* Right panel with browser */}
         <ResizablePanel defaultSize={60} minSize={30}>
-          <div className="h-[calc(100vh-56px)] bg-[#202124]"></div>
+          <div className="h-[calc(100vh-56px)] bg-[#202124] p-6">
+            <ImageBrowser isLoading={true} />
+          </div>
         </ResizablePanel>
       </ResizablePanelGroup>
 
